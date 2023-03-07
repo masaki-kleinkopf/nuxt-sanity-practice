@@ -3,32 +3,47 @@
     <header>
       <h1>Music</h1>
     </header>
-    <div class="music-container" v-if="data" v-for="music in data">
-      <p>{{ music.name }}</p>
-
-      <p>{{ music.description }}</p>
-
-      <iframe
-        style="border-radius: 12px"
-        :src="music.link"
-        width="100%"
-        height="352"
-        frameBorder="0"
-        allowfullscreen=""
-        allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
-        loading="lazy"
-      ></iframe>
+    <div class="music-container" v-if="data">
+      <div v-for="music in musicData" class="music-info">
+        <p>{{ music.name }}</p>
+        <p>{{ music.description }}</p>
+        <p>{{ dayjs(music.date).format("MM/DD/YY") }}</p>
+        <iframe
+          style="border-radius: 12px"
+          :src="music.link"
+          width="100%"
+          height="352"
+          frameBorder="0"
+          allowfullscreen=""
+          allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+          loading="lazy"
+        ></iframe>
+      </div>
     </div>
     <p v-else>something went wrong!</p>
   </main>
 </template>
 
 <script setup>
+import dayjs from "dayjs";
 const query = groq`*[_type == "music"]{
-  name,description,link
+  name,description,date, link
 }`;
+
 const { data } = useSanityQuery(query);
+let musicData = ref([]);
 if (data) console.log(data);
+if (data.value) {
+  musicData = data;
+  let newArray = musicData.value.map((data) => {
+    let newLink = `https://open.spotify.com/embed/playlist/${
+      data.link.split("https://open.spotify.com/playlist/")[1]
+    }?utm_source=generator`;
+    return { ...data, link: newLink };
+  });
+  musicData.value = newArray;
+  console.log("NEW MUSIC", musicData);
+}
 </script>
 
 <style scoped lang="scss">
@@ -44,6 +59,12 @@ main {
   margin-left: -0.5em;
   background-color: #f5f4ed;
   font-family: Lora, serif;
+  .music-container {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    width: 90%;
+  }
   p {
     display: flex;
     justify-content: center;
@@ -55,17 +76,16 @@ main {
   header {
     width: 100%;
     border-bottom: solid;
-    font-size: 36px;
-    font-style: normal;
-    font-weight: 400;
-    letter-spacing: 0;
-    line-height: 1.38;
-    height: 4em;
+    height: 10em;
     display: flex;
     justify-content: center;
     align-items: center;
     h1 {
-      font-size: 2em;
+      font-size: 36px;
+      font-style: normal;
+      font-weight: 400;
+      letter-spacing: 0;
+      line-height: 1.38;
     }
   }
 }
