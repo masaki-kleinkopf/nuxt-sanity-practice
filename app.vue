@@ -1,47 +1,72 @@
 <template class="app">
-  <header>
-    <h1>First Sanity/Nuxt site</h1>
-  </header>
   <main>
-    <li v-if="data">
-      <ul
-        v-for="pet in data"
-      >
-        <p>name:{{ pet.name }}</p>
+    <header>
+      <h1>Music</h1>
+    </header>
+    <div class="music-container" v-if="data" v-for="music in data">
+      <p>{{ music.name }}</p>
 
-        <p>description:{{ pet.description }}</p>
+      <p>{{ music.description }}</p>
 
-        <img :src="pet.imageUrl"/>
-        <button @click="handleClick">click me</button>
-      </ul>
-      </li>
+      <iframe
+        style="border-radius: 12px"
+        :src="music.link"
+        width="100%"
+        height="352"
+        frameBorder="0"
+        allowfullscreen=""
+        allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+        loading="lazy"
+      ></iframe>
+    </div>
     <p v-else>something went wrong!</p>
   </main>
 </template>
 
 <script setup>
-const query = groq`*[_type == "pet"]{
-  name,description,"imageUrl": image.asset->url
+const query = groq`*[_type == "music"]{
+  name,description,link
 }`;
 const { data } = useSanityQuery(query);
-data && console.log(data);
-
-const handleClick = (event) => {
-  event.preventDefault
-  console.log(event)
-}
+if (data) console.log(data);
 </script>
 
-<style module lang="scss">
-header {
-  display: flex;
-  justify-content: center;
-}
+<style scoped lang="scss">
+@import url("https://fonts.googleapis.com/css2?family=Lora:ital@0;1&display=swap");
+
 main {
   display: flex;
-  justify-content: center;
-  li {
-    list-style-type: none;
+  flex-direction: column;
+  align-items: center;
+  height: 100vh;
+  width: 100vw;
+  margin-top: -0.5em;
+  margin-left: -0.5em;
+  background-color: #f5f4ed;
+  font-family: Lora, serif;
+  p {
+    display: flex;
+    justify-content: center;
+    font-style: italic;
+    font-weight: 400;
+    letter-spacing: 0;
+    line-height: 1.5;
+  }
+  header {
+    width: 100%;
+    border-bottom: solid;
+    font-size: 36px;
+    font-style: normal;
+    font-weight: 400;
+    letter-spacing: 0;
+    line-height: 1.38;
+    height: 4em;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    h1 {
+      font-size: 2em;
+    }
   }
 }
 </style>
