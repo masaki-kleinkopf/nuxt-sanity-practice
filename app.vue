@@ -4,13 +4,15 @@
       <h1>Music</h1>
     </header>
     <div class="music-container" v-if="data">
-      <div v-for="music in musicData" class="music-info">
+      <div v-for="music in data" class="music-info">
         <p>{{ music.name }}</p>
         <p>{{ music.description }}</p>
         <p>{{ dayjs(music.date).format("MM/DD/YY") }}</p>
         <iframe
           style="border-radius: 12px"
-          :src="music.link"
+          :src="`https://open.spotify.com/embed/playlist/${
+            music.link.split('https://open.spotify.com/playlist/')[1]
+          }?utm_source=generator`"
           width="100%"
           height="352"
           frameBorder="0"
@@ -29,21 +31,8 @@ import dayjs from "dayjs";
 const query = groq`*[_type == "music"]{
   name,description,date, link
 }`;
-
 const { data } = useSanityQuery(query);
-let musicData = ref([]);
 if (data) console.log(data);
-if (data.value) {
-  musicData = data;
-  let newArray = musicData.value.map((data) => {
-    let newLink = `https://open.spotify.com/embed/playlist/${
-      data.link.split("https://open.spotify.com/playlist/")[1]
-    }?utm_source=generator`;
-    return { ...data, link: newLink };
-  });
-  musicData.value = newArray;
-  console.log("NEW MUSIC", musicData);
-}
 </script>
 
 <style scoped lang="scss">
