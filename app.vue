@@ -1,33 +1,16 @@
-<template class="app">
+<template>
   <main>
     <header>
       <h1>Music</h1>
     </header>
     <div class="music-container" v-if="data">
-      <div v-for="music in data" class="music-info">
-        <p>{{ music.name }}</p>
-        <p>{{ music.description }}</p>
-        <p>{{ dayjs(music.date).format("MM/DD/YY") }}</p>
-        <iframe
-          style="border-radius: 12px"
-          :src="`https://open.spotify.com/embed/playlist/${
-            music.link.split('https://open.spotify.com/playlist/')[1]
-          }?utm_source=generator`"
-          width="100%"
-          height="352"
-          frameBorder="0"
-          allowfullscreen=""
-          allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
-          loading="lazy"
-        ></iframe>
-      </div>
+      <MusicCard :data="data" />
     </div>
     <p v-else>something went wrong!</p>
   </main>
 </template>
 
 <script setup>
-import dayjs from "dayjs";
 const query = groq`*[_type == "music"]{
   name,description,date, link
 }`;
@@ -35,9 +18,11 @@ const { data } = useSanityQuery(query);
 if (data) console.log(data);
 </script>
 
-<style scoped lang="scss">
+<style lang="scss">
 @import url("https://fonts.googleapis.com/css2?family=Lora:ital@0;1&display=swap");
-
+html {
+  background: #f5f4ed;
+}
 main {
   display: flex;
   flex-direction: column;
@@ -46,8 +31,9 @@ main {
   width: 100vw;
   margin-top: -0.5em;
   margin-left: -0.5em;
-  background-color: #f5f4ed;
+  background: #f5f4ed;
   font-family: Lora, serif;
+  overflow: hidden;
   .music-container {
     display: flex;
     flex-direction: row;
@@ -64,7 +50,7 @@ main {
   }
   header {
     width: 100%;
-    border-bottom: solid;
+    border-bottom: 1px solid;
     height: 10em;
     display: flex;
     justify-content: center;
